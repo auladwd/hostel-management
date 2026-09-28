@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient: Deep Navy to Royal Blue -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+
+    <!-- Accent Emerald Gradient -->
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- Roof Gradient -->
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+
+    <!-- Gold/Yellow Accent for Glowing Windows -->
+    <linearGradient id="windowGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#facc15" />
+    </linearGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Smooth Corner Radius -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Glowing Emerald Border Outline -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="none" stroke="url(#emeraldGrad)" stroke-width="8" stroke-opacity="0.65" />
+
+  <!-- Inner Content with Shadow -->
+  <g filter="url(#dropShadow)">
+    
+    <!-- Modern Gable Canopy / Hostel Roof Crest -->
+    <path d="M 256 96 L 396 200 L 372 200 L 256 114 L 140 200 L 116 200 Z" fill="url(#roofGrad)" />
+    <path d="M 256 128 L 364 208 L 148 208 Z" fill="#3b82f6" fill-opacity="0.35" />
+
+    <!-- Main Hostel Building Body -->
+    <rect x="144" y="200" width="224" height="216" rx="16" fill="#ffffff" />
+
+    <!-- Left Building Wing (Subtle Depth) -->
+    <path d="M 144 200 L 116 220 L 116 416 L 144 416 Z" fill="#cbd5e1" />
+
+    <!-- Right Building Wing -->
+    <path d="M 368 200 L 396 220 L 396 416 L 368 416 Z" fill="#94a3b8" />
+
+    <!-- Top Hostel Sign / Accent Plate -->
+    <rect x="196" y="216" width="120" height="20" rx="6" fill="#1e3a8a" />
+    <circle cx="216" cy="226" r="4" fill="#34d399" />
+    <circle cx="256" cy="226" r="4" fill="#60a5fa" />
+    <circle cx="296" cy="226" r="4" fill="#facc15" />
+
+    <!-- Window Grids (Row 1) -->
+    <rect x="176" y="254" width="36" height="36" rx="6" fill="url(#windowGlow)" />
+    <rect x="238" y="254" width="36" height="36" rx="6" fill="url(#windowGlow)" />
+    <rect x="300" y="254" width="36" height="36" rx="6" fill="url(#windowGlow)" />
+
+    <!-- Window Grids (Row 2) -->
+    <rect x="176" y="308" width="36" height="36" rx="6" fill="#93c5fd" />
+    <rect x="238" y="308" width="36" height="36" rx="6" fill="url(#windowGlow)" />
+    <rect x="300" y="308" width="36" height="36" rx="6" fill="#93c5fd" />
+
+    <!-- Hostel Grand Entrance Door -->
+    <path d="M 226 364 Q 256 352 286 364 L 286 416 L 226 416 Z" fill="#0f172a" />
+    <circle cx="274" cy="392" r="3.5" fill="#facc15" />
+
+    <!-- Ground Floor Entrance Mat / Emerald Accent Step -->
+    <rect x="210" y="414" width="92" height="6" rx="3" fill="url(#emeraldGrad)" />
+
+    <!-- Mess / Bed / Comfort Badge Emblem (Bottom-Right Circle Badge) -->
+    <circle cx="384" cy="384" r="54" fill="#0f172a" />
+    <circle cx="384" cy="384" r="48" fill="url(#emeraldGrad)" />
+    
+    <!-- Stylized "H" Bed / Residential Icon inside Badge -->
+    <g fill="#ffffff">
+      <!-- Bed Headboard -->
+      <rect x="358" y="366" width="6" height="36" rx="2" />
+      <!-- Bed Footboard -->
+      <rect x="404" y="376" width="6" height="26" rx="2" />
+      <!-- Mattress Bed Frame -->
+      <rect x="362" y="386" width="44" height="6" rx="2" />
+      <!-- Pillow -->
+      <rect x="366" y="376" width="12" height="8" rx="3" />
+      <!-- Star / Care Sparkle -->
+      <path d="M 394 362 L 396 368 L 402 370 L 396 372 L 394 378 L 392 372 L 386 370 L 392 368 Z" fill="#fef08a" />
+    </g>
+  </g>
+</svg>
