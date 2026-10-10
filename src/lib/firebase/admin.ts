@@ -41,7 +41,29 @@ function getFirebaseAdmin(): App | null {
 export const adminApp = getFirebaseAdmin();
 
 /**
- * Verifies a Firebase ID token sent from the client
+ * Creates a persistent Firebase Session Cookie from an ID token.
+ * Session cookies can remain valid for up to 14 days, unlike raw ID tokens which expire in 1 hour.
+ */
+export async function createFirebaseSessionCookie(
+  idToken: string,
+  expiresInMs: number = 60 * 60 * 24 * 5 * 1000 // 5 days
+): Promise<string | null> {
+  const currentApp = adminApp || getFirebaseAdmin();
+  if (!currentApp) return null;
+
+  try {
+    const auth = getAuth(currentApp);
+    const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn: expiresInMs });
+    return sessionCookie;
+  } catch (error) {
+    console.warn('Could not create Firebase session cookie, falling back to idToken:', error);
+    return null;
+  }
+}
+
+/**
+ * Verifies either a Firebase Session Cookie or a standard Firebase ID token.
+ * Handles token expiration gracefully without flooding server logs.
  */
 export async function verifyIdToken(token: string): Promise<DecodedIdToken | null> {
   const currentApp = adminApp || getFirebaseAdmin();
@@ -49,11 +71,25 @@ export async function verifyIdToken(token: string): Promise<DecodedIdToken | nul
     return null;
   }
 
+  const auth = getAuth(currentApp);
+
+  // 1. Try verifying as a Firebase Session Cookie first (valid for 5-14 days)
   try {
-    const auth = getAuth(currentApp);
+    const decodedSession = await auth.verifySessionCookie(token, false);
+    return decodedSession;
+  } catch (sessionErr: any) {
+    // If it's not a session cookie, try standard ID token
+  }
+
+  // 2. Try verifying as an ID token
+  try {
     const decodedToken = await auth.verifyIdToken(token);
     return decodedToken;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'auth/id-token-expired' || error?.code === 'auth/session-cookie-expired') {
+      console.warn('Firebase token/session has expired (auth/id-token-expired). User re-authentication required.');
+      return null;
+    }
     console.error('Error verifying Firebase ID token:', error);
     return null;
   }

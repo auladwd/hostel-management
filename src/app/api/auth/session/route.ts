@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifyIdToken } from '@/lib/firebase/admin';
+import { verifyIdToken, createFirebaseSessionCookie } from '@/lib/firebase/admin';
 import connectToDatabase from '@/lib/mongodb';
 import { User, UserRole } from '@/models/User';
 import { getCurrentUser } from '@/lib/auth/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { idToken, demoRole } = await req.json();
+    const { idToken, demoRole } = await req.json().catch(() => ({}));
     const cookieStore = await cookies();
 
-    // Support demo role switching in development mode
-    if (process.env.NODE_ENV === 'development' && demoRole) {
+    // 1. Support instant demo role access (works both locally and on Vercel preview/production)
+    if (demoRole) {
       cookieStore.set('hostel_demo_role', demoRole, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24 * 7, // 7 days
@@ -29,10 +29,12 @@ export async function POST(req: NextRequest) {
           email: 'demo@hostel.example.com',
           displayName: 'ডেমো ব্যবহারকারী',
           role: demoRole,
+          status: 'ACTIVE',
         },
       });
     }
 
+    // 2. Validate Firebase ID token
     if (!idToken) {
       return NextResponse.json(
         { success: false, error: 'আইডি টোকেন পাওয়া যায়নি' },
@@ -40,11 +42,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify token with Firebase Admin SDK
+    // 3. Verify token with Firebase Admin SDK
     const decodedToken = await verifyIdToken(idToken);
     if (!decodedToken) {
       return NextResponse.json(
-        { success: false, error: 'অকার্যকর বা মেয়াদোত্তীর্ণ টোকেন' },
+        { success: false, error: 'অকার্যকর বা মেয়াদোত্তীর্ণ টোকেন। অনুগ্রহ করে পুনরায় লগইন করুন।' },
         { status: 401 }
       );
     }
@@ -83,13 +85,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Store verified token in HTTP-only secure cookie
-    cookieStore.set('hostel_token', idToken, {
+    // 4. Create long-lived Firebase session cookie (up to 5 days) instead of 1-hour raw idToken
+    const sessionCookie = await createFirebaseSessionCookie(idToken);
+    const tokenToStore = sessionCookie || idToken;
+
+    cookieStore.set('hostel_token', tokenToStore, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 5, // 5 days
     });
 
     cookieStore.delete('hostel_demo_role');

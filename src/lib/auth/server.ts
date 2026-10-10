@@ -34,9 +34,9 @@ export async function getCurrentUser(): Promise<AuthSession['user'] | null> {
 
     const token = tokenFromCookie || tokenFromHeader;
 
-    // Development demo bypass check (allows local demo if explicitly enabled)
+    // 1. Demo role check (prioritize demo role when set by demo login button or role switcher)
     const demoRoleCookie = cookieStore.get('hostel_demo_role')?.value as UserRole | undefined;
-    if (process.env.NODE_ENV === 'development' && demoRoleCookie && !token) {
+    if (demoRoleCookie) {
       return {
         id: 'demo-user-id',
         firebaseUid: 'demo-firebase-uid',
@@ -51,9 +51,14 @@ export async function getCurrentUser(): Promise<AuthSession['user'] | null> {
       return null;
     }
 
-    // Verify token with Firebase Admin
+    // 2. Verify token with Firebase Admin (handles session cookies and id tokens)
     const decodedToken = await verifyIdToken(token);
     if (!decodedToken) {
+      try {
+        cookieStore.delete('hostel_token');
+      } catch {
+        // cookies() may be immutable in certain Server Component render passes
+      }
       return null;
     }
 

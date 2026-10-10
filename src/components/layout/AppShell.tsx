@@ -8,6 +8,8 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { UserRole } from '@/models/User';
 import { ApplicationMode } from '@/models/Settings';
 import { fetchWithDemo } from '@/lib/apiClient';
+import { onIdTokenChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase/client';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -59,6 +61,24 @@ export function AppShell({ children }: AppShellProps) {
 
   useEffect(() => {
     loadSessionAndSettings();
+
+    // Auto-refresh server session cookie whenever Firebase client refreshes the ID token
+    const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const freshToken = await firebaseUser.getIdToken();
+          await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: freshToken }),
+          });
+        } catch (e) {
+          console.warn('Background session refresh error:', e);
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (

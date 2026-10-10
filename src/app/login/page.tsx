@@ -22,7 +22,7 @@ export default function LoginPage() {
     setErrorMsg('');
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
+      const idToken = await result.user.getIdToken(true);
 
       const res = await fetch('/api/auth/session', {
         method: 'POST',
