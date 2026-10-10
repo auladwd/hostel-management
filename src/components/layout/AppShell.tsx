@@ -7,6 +7,7 @@ import { MobileNav } from './MobileNav';
 import { ToastProvider } from '@/components/ui/Toast';
 import { UserRole } from '@/models/User';
 import { ApplicationMode } from '@/models/Settings';
+import { fetchWithDemo } from '@/lib/apiClient';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -32,7 +33,7 @@ export function AppShell({ children }: AppShellProps) {
   const loadSessionAndSettings = async () => {
     try {
       // 1. Fetch current session
-      const sessRes = await fetch('/api/auth/session');
+      const sessRes = await fetchWithDemo('/api/auth/session');
       if (sessRes.ok) {
         const sessData = await sessRes.json();
         if (sessData.user) {
@@ -41,7 +42,7 @@ export function AppShell({ children }: AppShellProps) {
       }
 
       // 2. Fetch settings
-      const setRes = await fetch('/api/settings');
+      const setRes = await fetchWithDemo('/api/settings');
       if (setRes.ok) {
         const setData = await setRes.json();
         if (setData.data) {

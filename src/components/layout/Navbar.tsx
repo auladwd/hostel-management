@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { formatBengaliDate, ROLE_LABELS } from '@/lib/bengali';
 import { UserRole } from '@/models/User';
 import { ApplicationMode } from '@/models/Settings';
+import { isDemoMode } from '@/lib/apiClient';
 
 interface NavbarProps {
   user?: {
@@ -82,6 +83,12 @@ export function Navbar({
             <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
               {mode === 'COMBINED' ? 'হোস্টেল + মেস' : mode === 'MESS_ONLY' ? 'মেস মোড' : 'হোস্টেল মোড'}
             </span>
+            {isDemoMode() && (
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                ডেমো মোড
+              </span>
+            )}
           </div>
         </div>
       </div>

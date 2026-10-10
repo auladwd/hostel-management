@@ -20,6 +20,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { LoadingSkeleton, CardSkeleton } from '@/components/ui/LoadingSkeleton';
 import { formatBengaliCurrency, toBengaliNumber, formatBengaliDate } from '@/lib/bengali';
+import { fetchWithDemo } from '@/lib/apiClient';
 import {
   ResponsiveContainer,
   BarChart,
@@ -40,7 +41,7 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/dashboard/stats');
+      const res = await fetchWithDemo('/api/dashboard/stats');
       if (res.ok) {
         const json = await res.json();
         setData(json);
